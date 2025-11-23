@@ -397,7 +397,7 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
 <script>
     const CLOUD_PROJECT_NUMBER = "91660774725";
 
-    const BACKEND_URL = "https://journalism-baseline-martial-watches.trycloudflare.com";
+    const BACKEND_URL = "https://played-patients-feedback-turns.trycloudflare.com";
 
     const btn = document.getElementById("startBtn");
     const input = document.getElementById("meetInput");
@@ -485,18 +485,26 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
                 console.log("📊 [DEBUG] Meeting info keys:", Object.keys(meetingInfo || {}));
                 console.log("📊 [DEBUG] meetingUrl:", meetingInfo?.meetingUrl);
                 console.log("📊 [DEBUG] meetingCode:", meetingInfo?.meetingCode);
+                console.log("📊 [DEBUG] meetingId:", meetingInfo?.meetingId);
                 
-                // Try different possible property names
-                const possibleUrl = meetingInfo?.meetingUrl || meetingInfo?.url || meetingInfo?.meetUrl || meetingInfo?.link;
-                console.log("🔍 [DEBUG] Possible URL found:", possibleUrl);
+                // Try different possible property names for URL
+                let meetUrl = meetingInfo?.meetingUrl || meetingInfo?.url || meetingInfo?.meetUrl || meetingInfo?.link;
+                
+                // If no direct URL but we have meetingCode, construct the URL
+                if (!meetUrl && meetingInfo?.meetingCode) {
+                    meetUrl = `https://meet.google.com/${meetingInfo.meetingCode}`;
+                    console.log("🔧 [DEBUG] Constructed URL from meetingCode:", meetUrl);
+                }
+                
+                console.log("🔍 [DEBUG] Final URL:", meetUrl);
 
-                if (possibleUrl && input) {
-                    input.value = possibleUrl;
+                if (meetUrl && input) {
+                    input.value = meetUrl;
                     setStatus("✅ Meeting URL detected from Google Meet.", "ok");
-                    console.log("✅ [DEBUG] URL set to input field:", possibleUrl);
+                    console.log("✅ [DEBUG] URL set to input field:", meetUrl);
                 } else {
                     setStatus("Enter a Meet URL or start the call first.", "normal");
-                    console.warn("⚠️ [DEBUG] No URL found in meeting info");
+                    console.warn("⚠️ [DEBUG] No URL or meeting code found in meeting info");
                 }
             } catch (err) {
                 console.error("❌ [DEBUG] Error fetching meeting info:", err);
