@@ -219,13 +219,76 @@
             color: var(--text-muted);
             font-style: italic;
         }
+
+        .collapsible-section {
+            margin-top: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #fafafa;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible-header:hover {
+            background: #f1f3f4;
+        }
+
+        .collapsible-title {
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .collapsible-icon {
+            transition: transform 0.2s;
+            font-size: 16px;
+        }
+
+        .collapsible-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: white;
+        }
+
+        .collapsible-content.expanded {
+            max-height: 600px;
+        }
+
+        .collapsible-inner {
+            padding: 12px;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .field-full {
+            grid-column: 1 / -1;
+        }
     </style>
 </head>
 <body>
 <header>
     <div class="logo-circle">Y</div>
     <div>
-        <h1>YandelIA Meet Assistant</h1>
+        <h1>Yandel AI Meet Assistant</h1>
         <div class="subtitle">Scrum-aware AI that listens, transcribes & summarizes your meeting.</div>
     </div>
 </header>
@@ -244,6 +307,73 @@
             id="meetInput"
             placeholder="https://meet.google.com/xxx-xxxx-xxx"
     />
+</div>
+
+<div class="collapsible-section">
+    <div class="collapsible-header" id="jiraToggle">
+        <div class="collapsible-title">
+            <span class="collapsible-icon">▶</span>
+            ⚙️ Jira/Scrum Settings (optional)
+        </div>
+        <span style="font-size: 11px; color: var(--text-muted);">For auto-summary</span>
+    </div>
+    <div class="collapsible-content" id="jiraContent">
+        <div class="collapsible-inner">
+            <div class="field-grid">
+                <div class="field-full">
+                    <label for="requestedBy">Requested By (email)</label>
+                    <input
+                            id="requestedBy"
+                            type="email"
+                            placeholder="tu-correo@empresa.com"
+                    />
+                </div>
+                <div>
+                    <label for="projectId">Project ID</label>
+                    <input
+                            id="projectId"
+                            placeholder="10000"
+                    />
+                </div>
+                <div>
+                    <label for="boardName">Board Name</label>
+                    <input
+                            id="boardName"
+                            placeholder="Soporte QE"
+                    />
+                </div>
+                <div>
+                    <label for="projectName">Project Name</label>
+                    <input
+                            id="projectName"
+                            placeholder="Scrum"
+                    />
+                </div>
+                <div>
+                    <label for="defaultEpic">Default Epic</label>
+                    <input
+                            id="defaultEpic"
+                            placeholder="SCRUM-8"
+                    />
+                </div>
+                <div class="field-full">
+                    <label for="defaultAssignee">Default Assignee</label>
+                    <input
+                            id="defaultAssignee"
+                            placeholder="Juan Perez"
+                    />
+                </div>
+                <div class="field-full">
+                    <label for="defaultReporter">Default Reporter</label>
+                    <input
+                            id="defaultReporter"
+                            type="email"
+                            placeholder="maria@empresa.com"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <button id="startBtn">
@@ -267,7 +397,7 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
 <script>
     const CLOUD_PROJECT_NUMBER = "91660774725";
 
-    const BACKEND_URL = "https://canyon-driver-kitchen-blind.trycloudflare.com";
+    const BACKEND_URL = "https://journalism-baseline-martial-watches.trycloudflare.com";
 
     const btn = document.getElementById("startBtn");
     const input = document.getElementById("meetInput");
@@ -275,9 +405,26 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
     const transcriptBox = document.getElementById("transcriptBox");
     const phasePill = document.getElementById("phasePill");
 
+    // Jira/Scrum fields
+    const requestedByInput = document.getElementById("requestedBy");
+    const projectIdInput = document.getElementById("projectId");
+    const boardNameInput = document.getElementById("boardName");
+    const projectNameInput = document.getElementById("projectName");
+    const defaultEpicInput = document.getElementById("defaultEpic");
+    const defaultAssigneeInput = document.getElementById("defaultAssignee");
+    const defaultReporterInput = document.getElementById("defaultReporter");
+
     let lastTranscript = "";
     let meetSession = null;
     let sidePanelClient = null;
+
+    // Toggle collapsible section
+    document.getElementById("jiraToggle").addEventListener("click", () => {
+        const content = document.getElementById("jiraContent");
+        const icon = document.querySelector(".collapsible-icon");
+        content.classList.toggle("expanded");
+        icon.classList.toggle("expanded");
+    });
 
     function setStatus(message, type = "normal") {
         statusEl.textContent = message || "";
@@ -307,36 +454,64 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
 
     async function initMeetAddon() {
         try {
+            console.log("🚀 [DEBUG] Checking for Meet SDK...");
+            console.log("🚀 [DEBUG] window.meet exists:", !!window.meet);
+            console.log("🚀 [DEBUG] window.meet.addon exists:", !!(window.meet && window.meet.addon));
+            console.log("🚀 [DEBUG] createAddonSession exists:", !!(window.meet && window.meet.addon && window.meet.addon.createAddonSession));
+
             if (!window.meet || !window.meet.addon || !window.meet.addon.createAddonSession) {
-                console.warn("Meet Add-ons SDK not found. Probably running outside Meet.");
+                console.warn("⚠️ Meet Add-ons SDK not found. Probably running outside Meet.");
+                setStatus("⚠️ Running outside Google Meet. Enter URL manually.", "normal");
                 return;
             }
 
+            console.log("✅ [DEBUG] Meet SDK found. Creating addon session...");
+            
             // 1. Crear la sesión del add-on (handshake con Meet)
             meetSession = await window.meet.addon.createAddonSession({
                 cloudProjectNumber: CLOUD_PROJECT_NUMBER,
             });
+            console.log("✅ [DEBUG] Addon session created:", meetSession);
 
             // 2. Crear el Side Panel Client
             sidePanelClient = await meetSession.createSidePanelClient();
+            console.log("✅ [DEBUG] Side panel client created:", sidePanelClient);
 
             // 3. Obtener información de la reunión actual (URL, código, etc.)
             try {
+                console.log("🔍 [DEBUG] Fetching meeting info...");
                 const meetingInfo = await sidePanelClient.getMeetingInfo();
-                console.log("🔎 Meeting info from SDK:", meetingInfo);
+                console.log("📊 [DEBUG] Meeting info received:", JSON.stringify(meetingInfo, null, 2));
+                console.log("📊 [DEBUG] Meeting info keys:", Object.keys(meetingInfo || {}));
+                console.log("📊 [DEBUG] meetingUrl:", meetingInfo?.meetingUrl);
+                console.log("📊 [DEBUG] meetingCode:", meetingInfo?.meetingCode);
+                
+                // Try different possible property names
+                const possibleUrl = meetingInfo?.meetingUrl || meetingInfo?.url || meetingInfo?.meetUrl || meetingInfo?.link;
+                console.log("🔍 [DEBUG] Possible URL found:", possibleUrl);
 
-                if (meetingInfo && meetingInfo.meetingUrl && input) {
-                    input.value = meetingInfo.meetingUrl;
-                    setStatus("Meeting URL detected from Google Meet.", "ok");
+                if (possibleUrl && input) {
+                    input.value = possibleUrl;
+                    setStatus("✅ Meeting URL detected from Google Meet.", "ok");
+                    console.log("✅ [DEBUG] URL set to input field:", possibleUrl);
                 } else {
                     setStatus("Enter a Meet URL or start the call first.", "normal");
+                    console.warn("⚠️ [DEBUG] No URL found in meeting info");
                 }
             } catch (err) {
-                console.warn("Could not fetch meeting info from SDK:", err);
+                console.error("❌ [DEBUG] Error fetching meeting info:", err);
+                console.error("❌ [DEBUG] Error stack:", err.stack);
+                console.error("❌ [DEBUG] Error name:", err.name);
+                console.error("❌ [DEBUG] Error message:", err.message);
                 setStatus("Add-on session ready. Enter a Meet URL.", "normal");
             }
         } catch (err) {
-            console.error("Error initializing Meet Add-on session:", err);
+            console.error("❌ [DEBUG] Error initializing Meet Add-on session:", err);
+            console.error("❌ [DEBUG] Error details:", {
+                name: err.name,
+                message: err.message,
+                stack: err.stack
+            });
             setStatus("Could not initialize Meet add-on session.", "error");
         }
     }
@@ -344,13 +519,17 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
     async function startBot() {
         const url = input.value.trim();
 
+        console.log("🚀 [DEBUG] startBot() called with URL:", url);
+
         if (!url.startsWith("https://meet.google.com")) {
             setStatus("❌ Enter a valid Meet URL", "error");
+            console.warn("⚠️ [DEBUG] Invalid Meet URL format");
             return;
         }
 
         if (!BACKEND_URL || BACKEND_URL.startsWith("https://TU-BACKEND")) {
             setStatus("⚠️ BACKEND_URL is not configured in the panel.", "error");
+            console.error("❌ [DEBUG] BACKEND_URL not configured");
             return;
         }
 
@@ -358,22 +537,58 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
         btn.disabled = true;
 
         try {
+            // Build payload with optional fields
+            const payload = {
+                meetUrl: url
+            };
+
+            // Add optional Jira/Scrum fields if provided
+            const requestedBy = requestedByInput.value.trim();
+            const projectId = projectIdInput.value.trim();
+            const boardName = boardNameInput.value.trim();
+            const projectName = projectNameInput.value.trim();
+            const defaultEpic = defaultEpicInput.value.trim();
+            const defaultAssignee = defaultAssigneeInput.value.trim();
+            const defaultReporter = defaultReporterInput.value.trim();
+
+            if (requestedBy) payload.requestedBy = requestedBy;
+            if (projectId) payload.project_id = projectId;
+            if (boardName) payload.board_name = boardName;
+            if (projectName) payload.project_name = projectName;
+            if (defaultEpic) payload.default_epic = defaultEpic;
+            if (defaultAssignee) payload.default_assignee = defaultAssignee;
+            if (defaultReporter) payload.default_reporter = defaultReporter;
+
+            console.log("📤 [DEBUG] Sending payload to backend:", JSON.stringify(payload, null, 2));
+            console.log("📤 [DEBUG] Backend URL:", `${BACKEND_URL}/api/start-meet-bot`);
+
             const res = await fetch(`${BACKEND_URL}/api/start-meet-bot`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({meetUrl: url})
+                body: JSON.stringify(payload)
             });
 
+            console.log("📥 [DEBUG] Response status:", res.status, res.statusText);
+
             const data = await res.json().catch(() => ({}));
+            console.log("📥 [DEBUG] Response data:", data);
 
             if (res.ok) {
                 setStatus("✅ YandelIA is joining the meeting...", "ok");
+                console.log("✅ [DEBUG] Bot started successfully");
             } else {
                 setStatus("⚠️ " + (data.error || "Unknown error"), "error");
+                console.error("❌ [DEBUG] Backend error:", data);
                 btn.disabled = false;
             }
         } catch (err) {
             setStatus("❌ Network error: " + err, "error");
+            console.error("❌ [DEBUG] Network/fetch error:", err);
+            console.error("❌ [DEBUG] Error details:", {
+                name: err.name,
+                message: err.message,
+                stack: err.stack
+            });
             btn.disabled = false;
         }
     }
@@ -412,7 +627,13 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
     // 1) Inicializamos el SDK de Meet (handshake, meeting info),
     // 2) Empezamos el polling de estado del bot.
     window.addEventListener("load", () => {
+        console.log("🎬 [DEBUG] Page loaded. Starting initialization...");
+        console.log("🎬 [DEBUG] User agent:", navigator.userAgent);
+        console.log("🎬 [DEBUG] Location:", window.location.href);
+        
         initMeetAddon();
+        
+        console.log("⏰ [DEBUG] Starting status polling every 5 seconds...");
         setInterval(refreshStatus, 5000);
         refreshStatus();
     });
