@@ -476,6 +476,7 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
             // 2. Crear el Side Panel Client
             sidePanelClient = await meetSession.createSidePanelClient();
             console.log("✅ [DEBUG] Side panel client created:", sidePanelClient);
+            console.log("✅ [DEBUG] Available methods:", Object.keys(sidePanelClient));
 
             // 3. Obtener información de la reunión actual (URL, código, etc.)
             try {
@@ -513,6 +514,45 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
                 console.error("❌ [DEBUG] Error message:", err.message);
                 setStatus("Add-on session ready. Enter a Meet URL.", "normal");
             }
+
+            // 4. Intentar obtener información adicional de la reunión (participantes, título, etc.)
+            try {
+                console.log("🔍 [DEBUG] Attempting to get additional meeting metadata...");
+                
+                // Check if getParticipants method exists
+                if (typeof sidePanelClient.getParticipants === 'function') {
+                    const participants = await sidePanelClient.getParticipants();
+                    console.log("👥 [DEBUG] Participants:", participants);
+                } else {
+                    console.warn("⚠️ [DEBUG] getParticipants method not available");
+                }
+
+                // Check if getActivity method exists
+                if (typeof sidePanelClient.getActivity === 'function') {
+                    const activity = await sidePanelClient.getActivity();
+                    console.log("🎯 [DEBUG] Activity info:", activity);
+                } else {
+                    console.warn("⚠️ [DEBUG] getActivity method not available");
+                }
+
+                // Try to get meeting metadata from session
+                if (meetSession.getMeetingInfo && typeof meetSession.getMeetingInfo === 'function') {
+                    const sessionInfo = await meetSession.getMeetingInfo();
+                    console.log("📋 [DEBUG] Session meeting info:", sessionInfo);
+                }
+
+                // Log all available methods on sidePanelClient
+                console.log("📋 [DEBUG] All sidePanelClient methods:");
+                for (const method in sidePanelClient) {
+                    if (typeof sidePanelClient[method] === 'function') {
+                        console.log(`   - ${method}()`);
+                    }
+                }
+
+            } catch (err) {
+                console.warn("⚠️ [DEBUG] Could not fetch additional metadata:", err.message);
+            }
+
         } catch (err) {
             console.error("❌ [DEBUG] Error initializing Meet Add-on session:", err);
             console.error("❌ [DEBUG] Error details:", {
