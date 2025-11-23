@@ -1,260 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>YandelIA – Meet Assistant</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --primary: #1a73e8;
-      --primary-soft: rgba(26, 115, 232, 0.08);
-      --bg: #ffffff;
-      --text-main: #202124;
-      --text-muted: #5f6368;
-      --border: #dadce0;
-      --success: #188038;
-      --danger: #d93025;
-      --chip-bg: #e8f0fe;
-    }
+    <meta charset="UTF-8"/>
+    <title>YandelIA – Meet Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script src="https://www.gstatic.com/meetjs/addons/1.1.0/meet.addons.js"></script>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-soft: rgba(26, 115, 232, 0.08);
+            --bg: #ffffff;
+            --text-main: #202124;
+            --text-muted: #5f6368;
+            --border: #dadce0;
+            --success: #188038;
+            --danger: #d93025;
+            --chip-bg: #e8f0fe;
+        }
 
-    * {
-      box-sizing: border-box;
-    }
+        * {
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      margin: 0;
-      padding: 16px;
-      background: var(--bg);
-      color: var(--text-main);
-    }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 16px;
+            background: var(--bg);
+            color: var(--text-main);
+        }
 
-    header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
+        header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
 
-    .logo-circle {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #fff, #1a73e8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-    }
+        .logo-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, #1a73e8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
 
-    h1 {
-      font-size: 18px;
-      margin: 0;
-    }
+        h1 {
+            font-size: 18px;
+            margin: 0;
+        }
 
-    .subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
+        .subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
 
-    .chip-row {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
+        .chip-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
 
-    .chip {
-      font-size: 10px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      background: #fafafa;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
+        .chip {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            background: #fafafa;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
 
-    .chip.live {
-      border-color: var(--success);
-      color: var(--success);
-      background: #e6f4ea;
-    }
+        .chip.live {
+            border-color: var(--success);
+            color: var(--success);
+            background: #e6f4ea;
+        }
 
-    .chip-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--success);
-      animation: pulse 1.2s infinite;
-    }
+        .chip-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 1.2s infinite;
+        }
 
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.5); opacity: 0.4; }
-      100% { transform: scale(1); opacity: 1; }
-    }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.4;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
 
-    .field {
-      margin-top: 10px;
-      margin-bottom: 8px;
-    }
+        .field {
+            margin-top: 10px;
+            margin-bottom: 8px;
+        }
 
-    label {
-      font-size: 12px;
-      color: var(--text-muted);
-      display: block;
-      margin-bottom: 4px;
-    }
+        label {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
 
-    input {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      font-size: 13px;
-      outline: none;
-    }
+        input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+            outline: none;
+        }
 
-    input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px var(--primary-soft);
-    }
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary-soft);
+        }
 
-    button {
-      margin-top: 10px;
-      padding: 9px 14px;
-      width: 100%;
-      border-radius: 6px;
-      border: none;
-      background: var(--primary);
-      color: white;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
+        button {
+            margin-top: 10px;
+            padding: 9px 14px;
+            width: 100%;
+            border-radius: 6px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
 
-    button:disabled {
-      opacity: 0.7;
-      cursor: default;
-    }
+        button:disabled {
+            opacity: 0.7;
+            cursor: default;
+        }
 
-    .status {
-      margin-top: 8px;
-      font-size: 12px;
-      color: var(--text-muted);
-      min-height: 16px;
-    }
+        .status {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            min-height: 16px;
+        }
 
-    .status.ok {
-      color: var(--success);
-    }
+        .status.ok {
+            color: var(--success);
+        }
 
-    .status.error {
-      color: var(--danger);
-    }
+        .status.error {
+            color: var(--danger);
+        }
 
-    .card {
-      margin-top: 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      padding: 10px 10px 8px;
-      background: #fafafa;
-    }
+        .card {
+            margin-top: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 10px 10px 8px;
+            background: #fafafa;
+        }
 
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
 
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-    }
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+        }
 
-    .card-meta {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
+        .card-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
 
-    .pill {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: var(--chip-bg);
-      color: var(--primary);
-    }
+        .pill {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 999px;
+            background: var(--chip-bg);
+            color: var(--primary);
+        }
 
-    #transcriptBox {
-      white-space: pre-wrap;
-      font-size: 12px;
-      line-height: 1.45;
-      max-height: 260px;
-      overflow-y: auto;
-      padding-right: 2px;
-    }
+        #transcriptBox {
+            white-space: pre-wrap;
+            font-size: 12px;
+            line-height: 1.45;
+            max-height: 260px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
 
-    .empty-transcript {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-style: italic;
-    }
-  </style>
+        .empty-transcript {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
-  <header>
+<header>
     <div class="logo-circle">Y</div>
     <div>
-      <h1>YandelIA Meet Assistant</h1>
-      <div class="subtitle">Scrum-aware AI that listens, transcribes & summarizes your meeting.</div>
+        <h1>YandelIA Meet Assistant</h1>
+        <div class="subtitle">Scrum-aware AI that listens, transcribes & summarizes your meeting.</div>
     </div>
-  </header>
+</header>
 
-  <div class="chip-row">
+<div class="chip-row">
     <div class="chip live">
-      <span class="chip-dot"></span>
-      Live transcript
+        <span class="chip-dot"></span>
+        Live transcript
     </div>
     <div class="chip">Scrum Daily / Retro / Planning</div>
-  </div>
+</div>
 
-  <div class="field">
+<div class="field">
     <label for="meetInput">Google Meet URL</label>
     <input
-      id="meetInput"
-      placeholder="https://meet.google.com/xxx-xxxx-xxx"
+            id="meetInput"
+            placeholder="https://meet.google.com/xxx-xxxx-xxx"
     />
-  </div>
+</div>
 
-  <button id="startBtn">
+<button id="startBtn">
     <span>Start YandelIA in this meeting</span>
-  </button>
+</button>
 
-  <div id="status" class="status"></div>
+<div id="status" class="status"></div>
 
-  <div class="card">
+<div class="card">
     <div class="card-header">
-      <div>
-        <div class="card-title">Live transcript</div>
-        <div class="card-meta">Updated every few seconds while the bot is in the call.</div>
-      </div>
-      <span class="pill" id="phasePill">Idle</span>
+        <div>
+            <div class="card-title">Live transcript</div>
+            <div class="card-meta">Updated every few seconds while the bot is in the call.</div>
+        </div>
+        <span class="pill" id="phasePill">Idle</span>
     </div>
     <pre id="transcriptBox" class="empty-transcript">
 No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
-  </div>
+</div>
 
-  <script>
+<script>
+    const CLOUD_PROJECT_NUMBER = " 91660774725";
+
     const BACKEND_URL = "https://canyon-driver-kitchen-blind.trycloudflare.com";
 
     const btn = document.getElementById("startBtn");
@@ -264,101 +276,146 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
     const phasePill = document.getElementById("phasePill");
 
     let lastTranscript = "";
+    let meetSession = null;
+    let sidePanelClient = null;
 
     function setStatus(message, type = "normal") {
-      statusEl.textContent = message || "";
-      statusEl.classList.remove("ok", "error");
-      if (type === "ok") statusEl.classList.add("ok");
-      if (type === "error") statusEl.classList.add("error");
+        statusEl.textContent = message || "";
+        statusEl.classList.remove("ok", "error");
+        if (type === "ok") statusEl.classList.add("ok");
+        if (type === "error") statusEl.classList.add("error");
     }
 
     function setPhase(phase) {
-      if (!phase) {
-        phasePill.textContent = "Idle";
-        return;
-      }
-      phasePill.textContent = phase;
+        if (!phase) {
+            phasePill.textContent = "Idle";
+            return;
+        }
+        phasePill.textContent = phase;
     }
 
     function renderTranscript(text) {
-      if (!text || !text.trim()) {
-        transcriptBox.textContent =
-          "No transcript yet. Start YandelIA and begin speaking in your Meet.";
-        transcriptBox.classList.add("empty-transcript");
-        return;
-      }
-      transcriptBox.classList.remove("empty-transcript");
-      transcriptBox.textContent = text.trim();
+        if (!text || !text.trim()) {
+            transcriptBox.textContent =
+                "No transcript yet. Start YandelIA and begin speaking in your Meet.";
+            transcriptBox.classList.add("empty-transcript");
+            return;
+        }
+        transcriptBox.classList.remove("empty-transcript");
+        transcriptBox.textContent = text.trim();
+    }
+
+    async function initMeetAddon() {
+        try {
+            if (!window.meet || !window.meet.addon || !window.meet.addon.createAddonSession) {
+                console.warn("Meet Add-ons SDK not found. Probably running outside Meet.");
+                return;
+            }
+
+            // 1. Crear la sesión del add-on (handshake con Meet)
+            meetSession = await window.meet.addon.createAddonSession({
+                cloudProjectNumber: CLOUD_PROJECT_NUMBER,
+            });
+
+            // 2. Crear el Side Panel Client
+            sidePanelClient = await meetSession.createSidePanelClient();
+
+            // 3. Obtener información de la reunión actual (URL, código, etc.)
+            try {
+                const meetingInfo = await sidePanelClient.getMeetingInfo();
+                console.log("🔎 Meeting info from SDK:", meetingInfo);
+
+                if (meetingInfo && meetingInfo.meetingUrl && input) {
+                    input.value = meetingInfo.meetingUrl;
+                    setStatus("Meeting URL detected from Google Meet.", "ok");
+                } else {
+                    setStatus("Enter a Meet URL or start the call first.", "normal");
+                }
+            } catch (err) {
+                console.warn("Could not fetch meeting info from SDK:", err);
+                setStatus("Add-on session ready. Enter a Meet URL.", "normal");
+            }
+        } catch (err) {
+            console.error("Error initializing Meet Add-on session:", err);
+            setStatus("Could not initialize Meet add-on session.", "error");
+        }
     }
 
     async function startBot() {
-      const url = input.value.trim();
+        const url = input.value.trim();
 
-      if (!url.startsWith("https://meet.google.com")) {
-        setStatus("❌ Enter a valid Meet URL", "error");
-        return;
-      }
-
-      if (!BACKEND_URL || BACKEND_URL.startsWith("https://TU-BACKEND")) {
-        setStatus("⚠️ BACKEND_URL is not configured in the panel.", "error");
-        return;
-      }
-
-      setStatus("🚀 Starting YandelIA...", "normal");
-      btn.disabled = true;
-
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/start-meet-bot`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ meetUrl: url })
-        });
-
-        const data = await res.json().catch(() => ({}));
-
-        if (res.ok) {
-          setStatus("✅ YandelIA is joining the meeting...", "ok");
-        } else {
-          setStatus("⚠️ " + (data.error || "Unknown error"), "error");
-          btn.disabled = false;
+        if (!url.startsWith("https://meet.google.com")) {
+            setStatus("❌ Enter a valid Meet URL", "error");
+            return;
         }
-      } catch (err) {
-        setStatus("❌ Network error: " + err, "error");
-        btn.disabled = false;
-      }
+
+        if (!BACKEND_URL || BACKEND_URL.startsWith("https://TU-BACKEND")) {
+            setStatus("⚠️ BACKEND_URL is not configured in the panel.", "error");
+            return;
+        }
+
+        setStatus("🚀 Starting YandelIA...", "normal");
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/start-meet-bot`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({meetUrl: url})
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            if (res.ok) {
+                setStatus("✅ YandelIA is joining the meeting...", "ok");
+            } else {
+                setStatus("⚠️ " + (data.error || "Unknown error"), "error");
+                btn.disabled = false;
+            }
+        } catch (err) {
+            setStatus("❌ Network error: " + err, "error");
+            btn.disabled = false;
+        }
     }
 
     async function refreshStatus() {
-      if (!BACKEND_URL || BACKEND_URL.startsWith("https://TU-BACKEND")) {
-        return;
-      }
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/bot-status`);
-        if (!res.ok) return;
-        const data = await res.json();
-
-        if (data.message) {
-          setStatus(data.message);
-        } else if (data.phase) {
-          setStatus("Phase: " + data.phase);
+        if (!BACKEND_URL || BACKEND_URL.startsWith("https://TU-BACKEND")) {
+            return;
         }
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/bot-status`);
+            if (!res.ok) return;
+            const data = await res.json();
 
-        if (data.phase) {
-          setPhase(data.phase);
-        }
+            if (data.message) {
+                setStatus(data.message);
+            } else if (data.phase) {
+                setStatus("Phase: " + data.phase);
+            }
 
-        if (typeof data.transcript === "string" && data.transcript !== lastTranscript) {
-          lastTranscript = data.transcript;
-          renderTranscript(lastTranscript);
+            if (data.phase) {
+                setPhase(data.phase);
+            }
+
+            if (typeof data.transcript === "string" && data.transcript !== lastTranscript) {
+                lastTranscript = data.transcript;
+                renderTranscript(lastTranscript);
+            }
+        } catch (err) {
+            // Ignorar errores de polling silenciosamente
         }
-      } catch (err) {
-      }
     }
 
     btn.addEventListener("click", startBot);
 
-    setInterval(refreshStatus, 5000);
-    refreshStatus();
-  </script>
+    // Al cargar la página en el side panel:
+    // 1) Inicializamos el SDK de Meet (handshake, meeting info),
+    // 2) Empezamos el polling de estado del bot.
+    window.addEventListener("load", () => {
+        initMeetAddon();
+        setInterval(refreshStatus, 5000);
+        refreshStatus();
+    });
+</script>
 </body>
 </html>
