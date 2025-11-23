@@ -5,393 +5,164 @@
     <title>YandelIA – Meet Assistant</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <script src="https://www.gstatic.com/meetjs/addons/1.1.0/meet.addons.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        'primary-dark': '#4f46e5',
+                        'primary-light': '#818cf8',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --primary: #1a73e8;
-            --primary-soft: rgba(26, 115, 232, 0.08);
-            --bg: #ffffff;
-            --text-main: #202124;
-            --text-muted: #5f6368;
-            --border: #dadce0;
-            --success: #188038;
-            --danger: #d93025;
-            --chip-bg: #e8f0fe;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            margin: 0;
-            padding: 16px;
-            background: var(--bg);
-            color: var(--text-main);
-        }
-
-        header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .logo-circle {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fff, #1a73e8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        h1 {
-            font-size: 18px;
-            margin: 0;
-        }
-
-        .subtitle {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-        }
-
-        .chip-row {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-
-        .chip {
-            font-size: 10px;
-            padding: 3px 8px;
-            border-radius: 999px;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            background: #fafafa;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .chip.live {
-            border-color: var(--success);
-            color: var(--success);
-            background: #e6f4ea;
-        }
-
-        .chip-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--success);
-            animation: pulse 1.2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
+    <style>
+        @keyframes pulse-slow {
+            0%, 100% {
                 opacity: 1;
             }
             50% {
-                transform: scale(1.5);
-                opacity: 0.4;
+                opacity: 0.5;
             }
-            100% {
-                transform: scale(1);
+        }
+        
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
                 opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        .field {
-            margin-top: 10px;
-            margin-bottom: 8px;
+        .animate-slide-up {
+            animation: slide-up 0.4s ease-out;
         }
 
-        label {
-            font-size: 12px;
-            color: var(--text-muted);
-            display: block;
-            margin-bottom: 4px;
+        .pulse-slow {
+            animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
-        input {
-            width: 100%;
-            padding: 8px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            font-size: 13px;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 1px var(--primary-soft);
-        }
-
-        button {
-            margin-top: 10px;
-            padding: 9px 14px;
-            width: 100%;
-            border-radius: 6px;
-            border: none;
-            background: var(--primary);
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        button:disabled {
-            opacity: 0.7;
-            cursor: default;
-        }
-
-        .status {
-            margin-top: 8px;
-            font-size: 12px;
-            color: var(--text-muted);
-            min-height: 16px;
-        }
-
-        .status.ok {
-            color: var(--success);
-        }
-
-        .status.error {
-            color: var(--danger);
-        }
-
-        .card {
-            margin-top: 14px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            padding: 10px 10px 8px;
-            background: #fafafa;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .card-title {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .card-meta {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .pill {
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 999px;
-            background: var(--chip-bg);
-            color: var(--primary);
-        }
-
-        #transcriptBox {
-            white-space: pre-wrap;
-            font-size: 12px;
-            line-height: 1.45;
-            max-height: 260px;
-            overflow-y: auto;
-            padding-right: 2px;
-        }
-
-        .empty-transcript {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-
-        .collapsible-section {
-            margin-top: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .collapsible-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
-            background: #fafafa;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .collapsible-header:hover {
-            background: #f1f3f4;
-        }
-
-        .collapsible-title {
-            font-size: 13px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .collapsible-icon {
-            transition: transform 0.2s;
-            font-size: 16px;
-        }
-
-        .collapsible-icon.expanded {
-            transform: rotate(90deg);
-        }
-
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            background: white;
-        }
-
-        .collapsible-content.expanded {
-            max-height: 600px;
-        }
-
-        .collapsible-inner {
-            padding: 12px;
-        }
-
-        .field-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .field-full {
-            grid-column: 1 / -1;
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
     </style>
 </head>
-<body>
-<header>
-    <div class="logo-circle">Y</div>
-    <div>
-        <h1>Yandel AI Meet Assistant</h1>
-        <div class="subtitle">Scrum-aware AI that listens, transcribes & summarizes your meeting.</div>
-    </div>
-</header>
-
-<div class="chip-row">
-    <div class="chip live">
-        <span class="chip-dot"></span>
-        Live transcript
-    </div>
-    <div class="chip">Scrum Daily / Retro / Planning</div>
-</div>
-
-<div class="field">
-    <label for="meetInput">Google Meet URL</label>
-    <input
-            id="meetInput"
-            placeholder="https://meet.google.com/xxx-xxxx-xxx"
-    />
-</div>
-
-<div class="collapsible-section">
-    <div class="collapsible-header" id="jiraToggle">
-        <div class="collapsible-title">
-            <span class="collapsible-icon">▶</span>
-            ⚙️ Jira/Scrum Settings (optional)
-        </div>
-        <span style="font-size: 11px; color: var(--text-muted);">For auto-summary</span>
-    </div>
-    <div class="collapsible-content" id="jiraContent">
-        <div class="collapsible-inner">
-            <div class="field-grid">
-                <div class="field-full">
-                    <label for="requestedBy">Requested By (email)</label>
-                    <input
-                            id="requestedBy"
-                            type="email"
-                            placeholder="tu-correo@empresa.com"
-                    />
-                </div>
-                <div>
-                    <label for="projectId">Project ID</label>
-                    <input
-                            id="projectId"
-                            placeholder="10000"
-                    />
-                </div>
-                <div>
-                    <label for="boardName">Board Name</label>
-                    <input
-                            id="boardName"
-                            placeholder="Soporte QE"
-                    />
-                </div>
-                <div>
-                    <label for="projectName">Project Name</label>
-                    <input
-                            id="projectName"
-                            placeholder="Scrum"
-                    />
-                </div>
-                <div>
-                    <label for="defaultEpic">Default Epic</label>
-                    <input
-                            id="defaultEpic"
-                            placeholder="SCRUM-8"
-                    />
-                </div>
-                <div class="field-full">
-                    <label for="defaultAssignee">Default Assignee</label>
-                    <input
-                            id="defaultAssignee"
-                            placeholder="Juan Perez"
-                    />
-                </div>
-                <div class="field-full">
-                    <label for="defaultReporter">Default Reporter</label>
-                    <input
-                            id="defaultReporter"
-                            type="email"
-                            placeholder="maria@empresa.com"
-                    />
-                </div>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
+<div class="p-4 max-w-md mx-auto">
+    <!-- Header -->
+    <div class="mb-6 animate-slide-up">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <span class="text-2xl font-bold text-white">Y</span>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-slate-800">Yandel AI</h1>
+                <p class="text-xs text-slate-500">Meet Assistant</p>
             </div>
         </div>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            AI-powered assistant that transcribes, analyzes and summarizes your meetings in real-time.
+        </p>
     </div>
-</div>
 
-<button id="startBtn">
-    <span>Start YandelIA in this meeting</span>
-</button>
-
-<div id="status" class="status"></div>
-
-<div class="card">
-    <div class="card-header">
-        <div>
-            <div class="card-title">Live transcript</div>
-            <div class="card-meta">Updated every few seconds while the bot is in the call.</div>
+    <!-- Status Chips -->
+    <div class="flex gap-2 mb-4 animate-slide-up" style="animation-delay: 0.1s;">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
+            <div class="w-2 h-2 bg-emerald-500 rounded-full pulse-slow"></div>
+            <span class="text-xs font-medium text-emerald-700">Live Transcription</span>
         </div>
-        <span class="pill" id="phasePill">Idle</span>
+        <div class="inline-flex items-center px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-full">
+            <span class="text-xs font-medium text-blue-700">Scrum Ready</span>
+        </div>
     </div>
-    <pre id="transcriptBox" class="empty-transcript">
-No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
+
+    <!-- Main Card -->
+    <div class="glassmorphism rounded-2xl shadow-xl shadow-slate-200/50 border border-white/60 p-5 mb-4 animate-slide-up" style="animation-delay: 0.2s;">
+        <label for="meetInput" class="block text-sm font-semibold text-slate-700 mb-2">
+            Google Meet URL
+        </label>
+        <div class="relative mb-4">
+            <input
+                id="meetInput"
+                type="text"
+                placeholder="https://meet.google.com/xxx-xxxx-xxx"
+                class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none"
+            />
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+            </div>
+        </div>
+
+        <label for="requestedByInput" class="block text-sm font-semibold text-slate-700 mb-2">
+            Your Email
+        </label>
+        <div class="relative">
+            <input
+                id="requestedByInput"
+                type="email"
+                placeholder="your-email@company.com"
+                class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none"
+            />
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Info Banner -->
+        <div class="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl">
+            <div class="flex gap-2">
+                <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <p class="text-xs text-blue-700 leading-relaxed">
+                    YandelIA will automatically join, transcribe and generate summaries with action items for your team.
+                </p>
+            </div>
+        </div>
+
+        <!-- Start Button -->
+        <button 
+            id="startBtn"
+            class="mt-4 w-full px-6 py-3.5 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+        >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>Start YandelIA</span>
+        </button>
+
+        <!-- Status Message -->
+        <div id="status" class="mt-3 text-xs text-center min-h-4 transition-all"></div>
+    </div>
+
+    <!-- Transcript Card -->
+    <div class="glassmorphism rounded-2xl shadow-xl shadow-slate-200/50 border border-white/60 p-5 animate-slide-up" style="animation-delay: 0.3s;">
+        <div class="flex items-center justify-between mb-3">
+            <div>
+                <h3 class="text-sm font-semibold text-slate-800">Live Transcript</h3>
+                <p class="text-xs text-slate-500">Real-time updates every few seconds</p>
+            </div>
+            <span id="phasePill" class="px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded-full">
+                Idle
+            </span>
+        </div>
+        <div class="mt-3 p-4 bg-slate-50/50 rounded-xl border border-slate-100">
+            <pre id="transcriptBox" class="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap max-h-64 overflow-y-auto font-sans">No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -401,54 +172,40 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
 
     const btn = document.getElementById("startBtn");
     const input = document.getElementById("meetInput");
+    const requestedByInput = document.getElementById("requestedByInput");
     const statusEl = document.getElementById("status");
     const transcriptBox = document.getElementById("transcriptBox");
     const phasePill = document.getElementById("phasePill");
-
-    // Jira/Scrum fields
-    const requestedByInput = document.getElementById("requestedBy");
-    const projectIdInput = document.getElementById("projectId");
-    const boardNameInput = document.getElementById("boardName");
-    const projectNameInput = document.getElementById("projectName");
-    const defaultEpicInput = document.getElementById("defaultEpic");
-    const defaultAssigneeInput = document.getElementById("defaultAssignee");
-    const defaultReporterInput = document.getElementById("defaultReporter");
 
     let lastTranscript = "";
     let meetSession = null;
     let sidePanelClient = null;
 
-    // Toggle collapsible section
-    document.getElementById("jiraToggle").addEventListener("click", () => {
-        const content = document.getElementById("jiraContent");
-        const icon = document.querySelector(".collapsible-icon");
-        content.classList.toggle("expanded");
-        icon.classList.toggle("expanded");
-    });
-
     function setStatus(message, type = "normal") {
         statusEl.textContent = message || "";
-        statusEl.classList.remove("ok", "error");
-        if (type === "ok") statusEl.classList.add("ok");
-        if (type === "error") statusEl.classList.add("error");
+        statusEl.className = "mt-3 text-xs text-center min-h-4 transition-all font-medium";
+        if (type === "ok") statusEl.className += " text-emerald-600";
+        else if (type === "error") statusEl.className += " text-rose-600";
+        else statusEl.className += " text-slate-500";
     }
 
     function setPhase(phase) {
         if (!phase) {
             phasePill.textContent = "Idle";
+            phasePill.className = "px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded-full";
             return;
         }
         phasePill.textContent = phase;
+        phasePill.className = "px-2.5 py-1 text-xs font-medium text-primary bg-primary/10 rounded-full";
     }
 
     function renderTranscript(text) {
         if (!text || !text.trim()) {
-            transcriptBox.textContent =
-                "No transcript yet. Start YandelIA and begin speaking in your Meet.";
-            transcriptBox.classList.add("empty-transcript");
+            transcriptBox.textContent = "No transcript yet. Start YandelIA and begin speaking in your Meet.";
+            transcriptBox.className = "text-xs text-slate-400 italic leading-relaxed whitespace-pre-wrap max-h-64 overflow-y-auto font-sans";
             return;
         }
-        transcriptBox.classList.remove("empty-transcript");
+        transcriptBox.className = "text-xs text-slate-700 leading-relaxed whitespace-pre-wrap max-h-64 overflow-y-auto font-sans";
         transcriptBox.textContent = text.trim();
     }
 
@@ -566,12 +323,20 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
 
     async function startBot() {
         const url = input.value.trim();
+        const requestedBy = requestedByInput.value.trim();
 
         console.log("🚀 [DEBUG] startBot() called with URL:", url);
+        console.log("🚀 [DEBUG] requestedBy:", requestedBy);
 
         if (!url.startsWith("https://meet.google.com")) {
             setStatus("❌ Enter a valid Meet URL", "error");
             console.warn("⚠️ [DEBUG] Invalid Meet URL format");
+            return;
+        }
+
+        if (!requestedBy || !requestedBy.includes("@")) {
+            setStatus("❌ Enter a valid email address", "error");
+            console.warn("⚠️ [DEBUG] Invalid or missing email");
             return;
         }
 
@@ -585,27 +350,10 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
         btn.disabled = true;
 
         try {
-            // Build payload with optional fields
-            const payload = {
-                meetUrl: url
+            const payload = { 
+                meetUrl: url,
+                requestedBy: requestedBy
             };
-
-            // Add optional Jira/Scrum fields if provided
-            const requestedBy = requestedByInput.value.trim();
-            const projectId = projectIdInput.value.trim();
-            const boardName = boardNameInput.value.trim();
-            const projectName = projectNameInput.value.trim();
-            const defaultEpic = defaultEpicInput.value.trim();
-            const defaultAssignee = defaultAssigneeInput.value.trim();
-            const defaultReporter = defaultReporterInput.value.trim();
-
-            if (requestedBy) payload.requestedBy = requestedBy;
-            if (projectId) payload.project_id = projectId;
-            if (boardName) payload.board_name = boardName;
-            if (projectName) payload.project_name = projectName;
-            if (defaultEpic) payload.default_epic = defaultEpic;
-            if (defaultAssignee) payload.default_assignee = defaultAssignee;
-            if (defaultReporter) payload.default_reporter = defaultReporter;
 
             console.log("📤 [DEBUG] Sending payload to backend:", JSON.stringify(payload, null, 2));
             console.log("📤 [DEBUG] Backend URL:", `${BACKEND_URL}/api/start-meet-bot`);
@@ -665,15 +413,12 @@ No transcript yet. Start YandelIA and begin speaking in your Meet.</pre>
                 renderTranscript(lastTranscript);
             }
         } catch (err) {
-            // Ignorar errores de polling silenciosamente
         }
     }
 
     btn.addEventListener("click", startBot);
 
-    // Al cargar la página en el side panel:
-    // 1) Inicializamos el SDK de Meet (handshake, meeting info),
-    // 2) Empezamos el polling de estado del bot.
+
     window.addEventListener("load", () => {
         console.log("🎬 [DEBUG] Page loaded. Starting initialization...");
         console.log("🎬 [DEBUG] User agent:", navigator.userAgent);
